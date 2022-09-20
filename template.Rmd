@@ -3,19 +3,68 @@ title: "Simple document"
 output: html_document
 ---
 
-I'm an R Markdown document! 
-
-# Section 1
-
-Here's a **code chunk** that samples from 
-a _normal distribution_:
-
-```{r}
-samp = rnorm(100)
-length(samp)
+```{r, echo=FALSE}
+library(tidyverse)
+library(readxl)
+library(haven)
 ```
 
-# Section 2
+# Importing csv files
 
-I can take the mean of the sample, too!
-The mean is `r mean(samp)`.
+Import csv data using the readr package:
+
+```{r}
+litter_df = read_csv("data/FAS_litters.csv")
+litter_df = janitor::clean_names(litter_df) # clean all variable names to snake case
+```
+
+```{r look at the data}
+head(litter_df) # first 6 rows
+tail(litter_df) # last 6 rows
+skimr::skim(litter_df) # a quick summary of the entirer data set
+```
+
+```{r, eval=FALSE}
+View(litter_df)
+```
+
+read_csv options:
+
+```{r, eval=FALSE}
+read_csv("data/FAS_litters.csv", 
+         na = c("", "NA", 999, 88), # specify how to identify missing values
+         skip = 2) # specify the number of rows on top to skip, because sometimes they contain irrelevant information
+```
+
+# importing other data formats
+
+We need to read in an excel spreadsheet. 
+```{r}
+mlb_df = read_excel("data/mlb11.xlsx")
+```
+
+```{r, eval=FALSE}
+View(mlb_df)
+```
+
+```{r}
+# specifify cell range to import if there are multiple tables in one sheet
+lotr_words = read_excel("data/LotR_Words.xlsx",
+                        range = "B3:D6")
+# can also specify which sheet in the file to import; has a lot of options
+```
+
+## Still morer formats...
+
+Read in a SAS data set
+```{r}
+pulse_df = read_sas("data/public_pulse_data.sas7bdat")
+head(pulse_df)
+```
+
+# Data export
+```{r}
+write_csv(lotr_words, file="data/lotr_words_df.csv")
+```
+
+
